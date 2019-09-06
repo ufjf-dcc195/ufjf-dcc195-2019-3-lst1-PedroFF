@@ -1,3 +1,5 @@
+var qs = require("querystring")
+
 exports.index  = function trataRequisicao(req, res) {
     res.writeHead(200, {"Content-Type":"text/html"});
     res.write(`
@@ -7,7 +9,11 @@ exports.index  = function trataRequisicao(req, res) {
         <title>Página Inicial</title>
     </head>
     <body>
-    <h2>Lista de exercício</h2>`);
+    <h2>Lista de exercício</h2>
+    <a href='sobre.html'>Sobre</a><br/>
+    <a href='aleatorios.html'>Listas aleatórias</a><br/>
+    <a href='primos.html'>Primos</a><br/>
+    <a href='equacao.html'>Equção segundo grau</a><br/>`);
     res.end();
 }
 
@@ -20,7 +26,8 @@ exports.notfound  = function (req, res) {
         <title>Página não encontrada</title>
     </head>
     <body>
-    <h1>Página não encontrada: ${req.url}`);
+    <h1>Página não encontrada: ${req.url} <br/>
+    <a href='index.html'>Home</a>`);
     res.end();
 }
 
@@ -36,7 +43,9 @@ exports.sobre = (req,res)=>{
     <h3>Nome: Pedro Fernandes Freitas</h3>
     <h3>Matrícula: 201576039</h3>
     <h3>Email: soufreitas.pedro@gmail.com</h3>
-    <h3>Curso: Sistemas de Informação</h3>`);
+    <h3>Curso: Sistemas de Informação</h3>
+    <br/>
+    <a href='index.html'>Home</a>`);
     res.end();
 }
 
@@ -66,6 +75,7 @@ exports.aleatorios = (req, res) => {
     <h3>Listas aleatórias:</h3>`);
     res.write('<p>Lista par: '+listaPar)
     res.write('<p>Lista ímpar: '+listaImpar)
+    res.write(`<br/><a href='index.html'>Home</a>`)
     res.end();
 }
 
@@ -81,6 +91,7 @@ function isPrimo(numero){
 
 
 function calcularPrimos(res,num1,num2) {
+    res.write(`<h3>Resultado: </h3> `)
     if (num1 < num2 && num2 < 100) {
         res.write("Intervalo de primos: ")
         while (num1 <= num2) {
@@ -100,5 +111,52 @@ exports.primos = (req, res) => {
     let num1 = numeros.num1
     let num2 = numeros.num2
     calcularPrimos(res, num1, num2)
+    res.write(`<br/><br/><a href='index.html'>Home</a>`)
     res.end()
+}
+
+exports.equacao = (req,res)=>{
+    if (req.method == "GET") {
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" })
+        res.write("<h2> Equação </h2>")
+        formEquacao(res)
+        res.end()
+    } else {
+        let body = ''
+        req.on('data', function (data) { body += data })
+        req.on('end', function () {
+            res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" })
+            let dados = qs.parse(body)
+            let a = parseFloat(dados.a)
+            let b = parseFloat(dados.b)
+            let c = parseFloat(dados.c)
+            resultadoEq(res, a, b, c)
+            res.end()
+        })
+    }
+
+
+}
+
+function formEquacao(res) {
+    res.write("<form method=post>")
+    res.write(`<label>Digite valor de A: </label><input type=text name=a><br/>
+    <label>Digite valor de B: </label><input type=text name=b><br/>
+    <label>Digite valor de C: </label><input type=text name=c><br/>
+    <input type=submit />
+    </form>
+    <a href='index.html'>Home</a>`)
+}
+
+function resultadoEq (res, num1, num2, num3){
+    let d = (num2 * num2) - (4 * num1 * num3)
+    if (d >= 0) {
+        let raizd = Math.sqrt(d)
+        let x1 = (-num2 + raizd) / (2 * num1)
+        let x2 = (-num2 - raizd) / (2 * num1)
+        res.write(`<h4>Resultados:</h4>
+        <p>Valor x1 =  ${x1.toFixed(2)} </p>
+        <p>Valor x2 = ${x2.toFixed(2)} </p><br/>`)
+    } else res.write("Números inválidos")
+    res.write("<a href='index.html'>Home</a>")
 }
