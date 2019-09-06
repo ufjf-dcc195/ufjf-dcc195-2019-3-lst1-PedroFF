@@ -1,7 +1,8 @@
-var qs = require("querystring")
+var qs = require("querystring");
+var fs = require('fs');
 
-exports.index  = function trataRequisicao(req, res) {
-    res.writeHead(200, {"Content-Type":"text/html"});
+exports.index = function trataRequisicao(req, res) {
+    res.writeHead(200, { "Content-Type": "text/html" });
     res.write(`
     <html>
     <head>
@@ -13,12 +14,13 @@ exports.index  = function trataRequisicao(req, res) {
     <a href='sobre.html'>Sobre</a><br/>
     <a href='aleatorios.html'>Listas aleatórias</a><br/>
     <a href='primos.html'>Primos</a><br/>
-    <a href='equacao.html'>Equção segundo grau</a><br/>`);
+    <a href='equacao.html'>Equção segundo grau</a><br/>
+    <a href='xadrez.html'>Xadrez</a>`);
     res.end();
 }
 
-exports.notfound  = function (req, res) {
-    res.writeHead(404, {"Content-Type":"text/html"});
+exports.notfound = function (req, res) {
+    res.writeHead(404, { "Content-Type": "text/html" });
     res.write(`
     <html>
     <head>
@@ -31,8 +33,8 @@ exports.notfound  = function (req, res) {
     res.end();
 }
 
-exports.sobre = (req,res)=>{
-    res.writeHead(200, {"Content-Type":"text/html"});
+exports.sobre = (req, res) => {
+    res.writeHead(200, { "Content-Type": "text/html" });
     res.write(`
     <html>
     <head>
@@ -52,19 +54,12 @@ exports.sobre = (req,res)=>{
 exports.aleatorios = (req, res) => {
     var listaPar = [];
     var listaImpar = [];
-    while(listaPar.length <100){
-        let num = Math.floor(Math.random()*1000);
-        num%2 === 0 ? listaPar.push(num) : listaPar.push(num+1)
-
-    }
-    
-    while(listaImpar.length <100){
-        let num = Math.floor(Math.random()*1000);
-        num%2 === 0 ? listaImpar.push(num+1) : listaImpar.push(num)
-
+    for (let i = 0; i < 100; i++) {
+        let num = Math.floor(Math.random() * 1000);
+        num % 2 === 0 ? listaPar.push(num) : listaImpar.push(num)
     }
 
-    res.writeHead(200, {"Content-Type":"text/html"});
+    res.writeHead(200, { "Content-Type": "text/html" });
     res.write(`
     <html>
     <head>
@@ -73,13 +68,13 @@ exports.aleatorios = (req, res) => {
     </head>
     <body>
     <h3>Listas aleatórias:</h3>`);
-    res.write('<p>Lista par: '+listaPar)
-    res.write('<p>Lista ímpar: '+listaImpar)
-    res.write(`<br/><a href='index.html'>Home</a>`)
+    res.write('<p>Lista par: ' + listaPar)
+    res.write('<p>Lista ímpar: ' + listaImpar)
+    res.write(`<br/><br/><a href='index.html'>Home</a>`)
     res.end();
 }
 
-function isPrimo(numero){
+function isPrimo(numero) {
     if (numero != 1) {
         for (let i = 2; i < numero; i++) {
             if (numero % i == 0) return false
@@ -90,7 +85,7 @@ function isPrimo(numero){
 }
 
 
-function calcularPrimos(res,num1,num2) {
+function calcularPrimos(res, num1, num2) {
     res.write(`<h3>Resultado: </h3> `)
     if (num1 < num2 && num2 < 100) {
         res.write("Intervalo de primos: ")
@@ -115,8 +110,8 @@ exports.primos = (req, res) => {
     res.end()
 }
 
-exports.equacao = (req,res)=>{
-    if (req.method == "GET") {
+exports.equacao = (req, res) => {
+    if (req.method === "GET") {
         res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" })
         res.write("<h2> Equação </h2>")
         formEquacao(res)
@@ -148,7 +143,7 @@ function formEquacao(res) {
     <a href='index.html'>Home</a>`)
 }
 
-function resultadoEq (res, num1, num2, num3){
+function resultadoEq(res, num1, num2, num3) {
     let d = (num2 * num2) - (4 * num1 * num3)
     if (d >= 0) {
         let raizd = Math.sqrt(d)
@@ -160,3 +155,51 @@ function resultadoEq (res, num1, num2, num3){
     } else res.write("Números inválidos")
     res.write("<a href='index.html'>Home</a>")
 }
+
+
+exports.xadrez = (req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    if (req.method === 'GET') {
+        formXadrez(res);
+        fs.readFile('./html/tabuleiro.html', null, (error, data) => {
+            if (error) {
+                res.writeHead(404);
+                res.write('Arquivo html não encontrado');
+                res.end();
+            } else {
+                res.write(`<h3>Tabuleiro</h3>`);
+                res.write(data);
+                res.write(`<a href='index.html'>Home</a>`)
+                res.end();
+            }
+
+        })
+    } else {
+        let body = ''
+        req.on('data', function (data) { body += data })
+        req.on('end', function () {
+            res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" })
+            let dados = qs.parse(body)
+            let linha = dados.linha
+            let coluna = dados.coluna
+            desenharCavalo(res, linha, coluna)
+            res.end()
+        })
+    }
+}
+
+function formXadrez(res) {
+    res.write("<form method=post>")
+    res.write(`<label>Digite valor de linha: </label><input type=number min="1" max="8" name=linha><br/><br/>
+    <label>Digite valor de coluna: </label><input type=number min="1" max="8" name=coluna><br/><br/>
+    <input type=submit />
+    </form>`)
+}
+
+function desenharCavalo(res, linha, coluna){
+    //document.querySelector(`#t${linha}${coluna}`).classList.add('img');
+ 
+    //destacarPossibilidades(res, linha, coluna);
+}
+
+function destacarPossibilidades(res,linha,coluna){}
