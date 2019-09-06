@@ -69,4 +69,36 @@ exports.aleatorios = (req, res) => {
     res.end();
 }
 
-exports.primos = (req, res) => {}
+function isPrimo(numero){
+    if (numero != 1) {
+        for (let i = 2; i < numero; i++) {
+            if (numero % i == 0) return false
+        }
+        return true
+    }
+    return false
+}
+
+
+function calcularPrimos(res,num1,num2) {
+    if (num1 < num2 && num2 < 100) {
+        res.write("Intervalo de primos: ")
+        while (num1 <= num2) {
+            if (isPrimo(num1)) {
+                res.write(" " + num1 + " ")
+            }
+            num1++
+        }
+    } else res.write("Números ausentes ou inválidos")
+}
+exports.primos = (req, res) => {
+    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" })
+    res.write("<h4>Calcular primos entre os parâmetros e menores que 100</h4>")
+    res.write("<p>Insira os parâmetros pela URL</p>")
+    let url = require('url')
+    let numeros = url.parse(req.url, true).query
+    let num1 = numeros.num1
+    let num2 = numeros.num2
+    calcularPrimos(res, num1, num2)
+    res.end()
+}
