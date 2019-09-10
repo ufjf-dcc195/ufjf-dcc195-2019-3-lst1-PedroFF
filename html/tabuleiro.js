@@ -49,19 +49,20 @@ exports.css = (res) => {
 }
 
 exports.jsonFormatter = (linha, coluna) => {
-    var json = {};
-    json.cavalo = {'linha': linha,'coluna':coluna};
-    json.posicoes = [];
+    var json = [];
 
     for (var i = 1; i < 9; i++){
         for (var j = 1; j < 9; j++){
-            if (possiveis(linha, coluna, i, j)) {
-                json.posicoes.push({'linha': i, 'coluna': j});
+            if (i === linha && j === coluna) {
+                json.push({'linhaCavalo': linha,'colunaCavalo':coluna});
+            }else if (possiveis(linha, coluna, i, j)) {
+                json.push({'linhaPossivel': i, 'colunaPossivel': j});
             } else {
-                json.posicoes.push({'linha': '', 'coluna': ''});
+                json.push({'linhaVazia': '', 'colunaVazia': ''});
             }
         }
     }
+
     return json;
 
 }
