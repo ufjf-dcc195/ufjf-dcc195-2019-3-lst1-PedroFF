@@ -198,5 +198,21 @@ function formXadrez(res) {
     res.write(`<label>Digite valor de linha: </label><input type=number min="1" max="8" name=linha><br/><br/>
     <label>Digite valor de coluna: </label><input type=number min="1" max="8" name=coluna><br/><br/>
     <input type=submit />
+    <input type=submit formaction="/xadrez-json.html" value="JSON"/>
     </form>`)
+}
+
+exports.xadrezJson = (req,res)=> {
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    let body = ''
+    req.on('data', function (data) { body += data })
+    req.on('end', function () {
+        let dados = qs.parse(body)
+        let linha = parseInt(dados.linha)
+        let coluna = parseInt(dados.coluna)
+        let json = tabuleiro.jsonFormatter(linha,coluna)
+        res.write(JSON.stringify(json))
+        res.write("<br/><br/><a href='xadrez.html'>Voltar</a> \n")
+        res.end()
+    })
 }
