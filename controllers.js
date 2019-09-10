@@ -141,7 +141,7 @@ function formEquacao(res) {
     <label>Digite valor de C: </label><input type=text name=c><br/>
     <input type=submit />
     </form>
-    <a href='index.html'>Home</a>`)
+    <br/><a href='index.html'>Home</a>`)
 }
 
 function resultadoEq(res, num1, num2, num3) {
@@ -154,7 +154,7 @@ function resultadoEq(res, num1, num2, num3) {
         <p>Valor x1 =  ${x1.toFixed(2)} </p>
         <p>Valor x2 = ${x2.toFixed(2)} </p><br/>`)
     } else res.write("Números inválidos")
-    res.write("<a href='index.html'>Home</a>")
+    res.write("<br/><a href='index.html'>Home</a>")
 }
 
 
@@ -170,7 +170,7 @@ exports.xadrez = (req, res) => {
             } else {
                 res.write(`<h3>Tabuleiro</h3>`);
                 res.write(data);
-                res.write(`<a href='index.html'>Home</a>`)
+                res.write(`<br/><br/><a href='index.html'>Home</a>`)
                 res.end();
             }
 
@@ -186,7 +186,7 @@ exports.xadrez = (req, res) => {
                 let tab = tabuleiro.desenharCavalo(linha, coluna);
                 tabuleiro.css(res);
                 res.write(tab);
-                res.write("<a href='xadrez.html'>Voltar</a> \n")
+                res.write("<br/><br/><a href='xadrez.html'>Voltar</a>")
                 res.end()
             })
         }
@@ -207,12 +207,13 @@ exports.xadrezJson = (req,res)=> {
     let body = ''
     req.on('data', function (data) { body += data })
     req.on('end', function () {
+        res.write("<h3>Tabuleiro Json</h3><br/><br/>")
         let dados = qs.parse(body)
         let linha = parseInt(dados.linha)
         let coluna = parseInt(dados.coluna)
         let json = tabuleiro.jsonFormatter(linha,coluna)
         res.write(JSON.stringify(json))
-        res.write("<br/><br/><a href='xadrez.html'>Voltar</a> \n")
+        res.write("<br/><br/><a href='xadrez.html'>Voltar</a>")
         res.end()
     })
 }
