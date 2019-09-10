@@ -1,5 +1,6 @@
 var qs = require("querystring");
 var fs = require('fs');
+var tabuleiro = require('./html/tabuleiro');
 
 exports.index = function trataRequisicao(req, res) {
     res.writeHead(200, { "Content-Type": "text/html" });
@@ -33,7 +34,7 @@ exports.notfound = function (req, res) {
     res.end();
 }
 
-exports.sobre = (req, res) => {
+exports.sobre = (res) => {
     res.writeHead(200, { "Content-Type": "text/html" });
     res.write(`
     <html>
@@ -51,7 +52,7 @@ exports.sobre = (req, res) => {
     res.end();
 }
 
-exports.aleatorios = (req, res) => {
+exports.aleatorios = (res) => {
     var listaPar = [];
     var listaImpar = [];
     for (let i = 0; i < 100; i++) {
@@ -175,16 +176,20 @@ exports.xadrez = (req, res) => {
 
         })
     } else {
-        let body = ''
-        req.on('data', function (data) { body += data })
-        req.on('end', function () {
-            res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" })
-            let dados = qs.parse(body)
-            let linha = dados.linha
-            let coluna = dados.coluna
-            desenharCavalo(res, linha, coluna)
-            res.end()
-        })
+        {
+            let body = ''
+            req.on('data', function (data) { body += data })
+            req.on('end', function () {
+                let dados = qs.parse(body)
+                let linha = parseInt(dados.linha)
+                let coluna = parseInt(dados.coluna)
+                let tab = tabuleiro.desenharCavalo(linha, coluna);
+                tabuleiro.css(res);
+                res.write(tab);
+                res.write("<a href='xadrez.html'>Voltar</a> \n")
+                res.end()
+            })
+        }
     }
 }
 
@@ -195,11 +200,3 @@ function formXadrez(res) {
     <input type=submit />
     </form>`)
 }
-
-function desenharCavalo(res, linha, coluna){
-    //document.querySelector(`#t${linha}${coluna}`).classList.add('img');
- 
-    //destacarPossibilidades(res, linha, coluna);
-}
-
-function destacarPossibilidades(res,linha,coluna){}
