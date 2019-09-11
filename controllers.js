@@ -34,10 +34,10 @@ exports.notfound = function (req, res) {
     res.end();
 }
 
-exports.sobre = (res) => {
-    res.writeHead(200, { "Content-Type": "text/html" });
+exports.sobre = (req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/html' });
     res.write(`
-    <html>
+    <html lang="pt-br">
     <head>
         <meta charset="utf-8" />
         <title>Sobre</title>
@@ -52,7 +52,7 @@ exports.sobre = (res) => {
     res.end();
 }
 
-exports.aleatorios = (res) => {
+exports.aleatorios = (req, res) => {
     var listaPar = [];
     var listaImpar = [];
     for (let i = 0; i < 100; i++) {
@@ -60,7 +60,7 @@ exports.aleatorios = (res) => {
         num % 2 === 0 ? listaPar.push(num) : listaImpar.push(num)
     }
 
-    res.writeHead(200, { "Content-Type": "text/html" });
+    res.writeHead(200, { 'Content-Type': 'text/html' });
     res.write(`
     <html>
     <head>
@@ -99,7 +99,7 @@ function calcularPrimos(res, num1, num2) {
     } else res.write("Números ausentes ou inválidos")
 }
 exports.primos = (req, res) => {
-    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" })
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
     res.write("<h4>Calcular primos entre os parâmetros e menores que 100</h4>")
     res.write("<p>Insira os parâmetros pela URL</p>")
     let url = require('url')
@@ -113,7 +113,7 @@ exports.primos = (req, res) => {
 
 exports.equacao = (req, res) => {
     if (req.method === "GET") {
-        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" })
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
         res.write("<h2> Equação </h2>")
         formEquacao(res)
         res.end()
@@ -121,7 +121,7 @@ exports.equacao = (req, res) => {
         let body = ''
         req.on('data', function (data) { body += data })
         req.on('end', function () {
-            res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" })
+            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
             let dados = qs.parse(body)
             let a = parseFloat(dados.a)
             let b = parseFloat(dados.b)
