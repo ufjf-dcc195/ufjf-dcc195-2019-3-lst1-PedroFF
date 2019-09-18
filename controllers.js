@@ -203,17 +203,15 @@ function formXadrez(res) {
 }
 
 exports.xadrezJson = (req,res)=> {
-    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.writeHead(200, { 'Content-Type': 'application/json' });
     let body = ''
     req.on('data', function (data) { body += data })
     req.on('end', function () {
-        res.write("<h3>Tabuleiro Json</h3><br/><br/>")
         let dados = qs.parse(body)
         let linha = parseInt(dados.linha)
         let coluna = parseInt(dados.coluna)
         let json = tabuleiro.jsonFormatter(linha,coluna)
         res.write(JSON.stringify(json))
-        res.write("<br/><br/><a href='xadrez.html'>Voltar</a>")
         res.end()
     })
 }
